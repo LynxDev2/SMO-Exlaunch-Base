@@ -70,3 +70,11 @@ __generate_npdm(${SUBSDKX})
 set_target_properties(${SUBSDKX} PROPERTIES LINK_FLAGS "-specs ${CMAKE_BINARY_DIR}/${SUBSDKX}.specs -g3 ${ARCH} -nostartfiles -nostdlib")
 
 add_custom_target(${SUBSDKX}_meta DEPENDS create_npdm ${SUBSDKX}_nso)
+if (FTP_IP)
+    ## Upload to target switch
+    if (FTP_USERNAME AND FTP_PASSWORD) # login using a username and password
+        add_custom_command(TARGET subsdk9_meta POST_BUILD COMMAND ncftpput -u ${FTP_USERNAME} -p ${FTP_PASSWORD} -P 5000 ${FTP_IP} /atmosphere/contents/${TITLE_ID}/exefs ${CMAKE_BINARY_DIR}/main.npdm ${CMAKE_BINARY_DIR}/subsdk9)
+    else ()
+        add_custom_command(TARGET subsdk9_meta POST_BUILD COMMAND ncftpput -u crafty -p boss -P 5000 ${FTP_IP} /atmosphere/contents/${TITLE_ID}/exefs ${CMAKE_BINARY_DIR}/main.npdm ${CMAKE_BINARY_DIR}/subsdk9)
+    endif ()
+endif ()
